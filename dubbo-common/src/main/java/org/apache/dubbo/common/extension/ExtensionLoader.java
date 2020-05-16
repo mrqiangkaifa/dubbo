@@ -566,9 +566,20 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 获取自适应拓展
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {
+        /**
+         * 从缓存中获取自适应拓展
+         */
         Object instance = cachedAdaptiveInstance.get();
+        /**
+         * 缓存未命中
+         */
+
         if (instance == null) {
             if (createAdaptiveInstanceError != null) {
                 throw new IllegalStateException("Failed to create adaptive instance: " +
@@ -580,7 +591,13 @@ public class ExtensionLoader<T> {
                 instance = cachedAdaptiveInstance.get();
                 if (instance == null) {
                     try {
+                        /**
+                         * 创建自适应拓展
+                         */
                         instance = createAdaptiveExtension();
+                        /**
+                         * 设置自适应拓展到缓存中
+                         */
                         cachedAdaptiveInstance.set(instance);
                     } catch (Throwable t) {
                         createAdaptiveInstanceError = t;
@@ -992,27 +1009,65 @@ public class ExtensionLoader<T> {
         return name.toLowerCase();
     }
 
+    /**
+     * 获取自适应拓展类，并通过反射实例化
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private T createAdaptiveExtension() {
         try {
+            /**
+             *
+             调用 getAdaptiveExtensionClass 方法获取自适应拓展 Class 对象
+             通过反射进行实例化
+             调用 injectExtension 方法向拓展实例中注入依赖
+
+             */
             return injectExtension((T) getAdaptiveExtensionClass().newInstance());
         } catch (Exception e) {
             throw new IllegalStateException("Can't create adaptive extension " + type + ", cause: " + e.getMessage(), e);
         }
     }
-
+    /**
+     * 这三个逻辑看起来平淡无奇，似乎没有多讲的必要。但是这些平淡无奇的代码中隐藏了着一些细节，需要说明一下。
+     * 首先从第一个逻辑说起，getExtensionClasses 这个方法用于获取某个接口的所有实现类。
+     * 比如该方法可以获取 Protocol 接口的 DubboProtocol、HttpProtocol、InjvmProtocol 等实现类。
+     * 在获取实现类的过程中，如果某个实现类被 Adaptive 注解修饰了，那么该类就会被赋值给 cachedAdaptiveClass 变量。
+     * 此时，上面步骤中的第二步条件成立（缓存不为空），直接返回 cachedAdaptiveClass 即可。
+     * 如果所有的实现类均未被 Adaptive 注解修饰，那么执行第三步逻辑，创建自适应拓展类
+     * @return
+     */
     private Class<?> getAdaptiveExtensionClass() {
+        /**
+         * 通过 SPI 获取所有的拓展类
+         */
         getExtensionClasses();
+        /**
+         * 检查缓存，若缓存不为空，则直接返回缓存
+         */
         if (cachedAdaptiveClass != null) {
             return cachedAdaptiveClass;
         }
+        /**
+         * 创建自适应拓展类
+         */
         return cachedAdaptiveClass = createAdaptiveExtensionClass();
     }
 
+
     private Class<?> createAdaptiveExtensionClass() {
+        /**
+         * 构建自适应拓展代码
+         */
         String code = new AdaptiveClassCodeGenerator(type, cachedDefaultName).generate();
         ClassLoader classLoader = findClassLoader();
+        /**
+         * 获取编译器实现类
+         */
         org.apache.dubbo.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(org.apache.dubbo.common.compiler.Compiler.class).getAdaptiveExtension();
+        /**
+         * 编译代码，生成 Class
+         */
         return compiler.compile(code, classLoader);
     }
 

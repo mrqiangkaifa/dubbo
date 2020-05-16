@@ -29,6 +29,21 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
 
+
+    <repositories>
+        <repository>
+            <id>aliyunmaven</id>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>aliyunmaven</id>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <name>${project.artifactId}</name>
     <description>The parent project of dubbo</description>
     <url>https://github.com/apache/dubbo</url>

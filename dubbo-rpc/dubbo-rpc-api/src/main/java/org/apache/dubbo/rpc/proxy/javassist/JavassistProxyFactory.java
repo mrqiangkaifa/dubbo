@@ -25,6 +25,8 @@ import org.apache.dubbo.rpc.proxy.AbstractProxyInvoker;
 import org.apache.dubbo.rpc.proxy.InvokerInvocationHandler;
 
 /**
+ * Invoker 是实体域，它是 Dubbo 的核心模型，其它模型都向它靠扰，或转换成它，它代表一个可执行体，可向它发起 invoke 调用，
+ * 它有可能是一个本地的实现，也可能是一个远程的实现，也可能一个集群实现
  * JavassistRpcProxyFactory
  */
 public class JavassistProxyFactory extends AbstractProxyFactory {
@@ -37,13 +39,22 @@ public class JavassistProxyFactory extends AbstractProxyFactory {
 
     @Override
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
+        /**
+         * 为目标类创建 Wrapper
+         */
         // TODO Wrapper cannot handle this scenario correctly: the classname contains '$'
         final Wrapper wrapper = Wrapper.getWrapper(proxy.getClass().getName().indexOf('$') < 0 ? proxy.getClass() : type);
+        /**
+         * 创建匿名 Invoker 类对象，并实现 doInvoke 方法。
+         */
         return new AbstractProxyInvoker<T>(proxy, type, url) {
             @Override
             protected Object doInvoke(T proxy, String methodName,
                                       Class<?>[] parameterTypes,
                                       Object[] arguments) throws Throwable {
+                /**
+                 * 用 Wrapper 的 invokeMethod 方法，invokeMethod 最终会调用目标方法
+                 */
                 return wrapper.invokeMethod(proxy, methodName, parameterTypes, arguments);
             }
         };
