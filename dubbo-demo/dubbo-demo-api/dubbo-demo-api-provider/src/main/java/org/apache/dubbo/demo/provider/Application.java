@@ -17,6 +17,7 @@
 package org.apache.dubbo.demo.provider;
 
 import org.apache.dubbo.config.ApplicationConfig;
+import org.apache.dubbo.config.ConfigCenterConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.ServiceConfig;
 import org.apache.dubbo.config.bootstrap.DubboBootstrap;
@@ -42,9 +43,15 @@ public class Application {
         service.setInterface(DemoService.class);
         service.setRef(new DemoServiceImpl());
 
+        ConfigCenterConfig configCenterConfig = new ConfigCenterConfig();
+        configCenterConfig.setAddress("nacos://127.0.0.1:8848");
+        configCenterConfig.setGroup("dubbo");
+        configCenterConfig.setId("dubbo.properties");
+
         DubboBootstrap bootstrap = DubboBootstrap.getInstance();
         bootstrap.application(new ApplicationConfig("dubbo-demo-api-provider"))
-                .registry(new RegistryConfig("zookeeper://192.168.159.136:2181"))
+                .registry(new RegistryConfig("nacos://127.0.0.1:8848"))
+                .configCenter(configCenterConfig)
                 .service(service)
                 .start()
                 .await();

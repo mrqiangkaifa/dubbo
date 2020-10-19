@@ -30,6 +30,7 @@ import java.util.Set;
 public class PropertiesConfiguration implements Configuration {
 
     public PropertiesConfiguration() {
+        //todo 这个是通过spi机制加载配置，OrderedPropertiesProvider实现这个接口的类为配置提供类
         ExtensionLoader<OrderedPropertiesProvider> propertiesProviderExtensionLoader = ExtensionLoader.getExtensionLoader(OrderedPropertiesProvider.class);
         Set<String> propertiesProviderNames = propertiesProviderExtensionLoader.getSupportedExtensions();
         if (propertiesProviderNames == null || propertiesProviderNames.isEmpty()) {
@@ -46,14 +47,16 @@ public class PropertiesConfiguration implements Configuration {
         });
 
         //load the default properties
+        //TODO 加载默认配置
         Properties properties = ConfigUtils.getProperties();
 
         //override the properties.
+        //todo 覆盖配置文件中的配置
         for (OrderedPropertiesProvider orderedPropertiesProvider :
                 orderedPropertiesProviders) {
             properties.putAll(orderedPropertiesProvider.initProperties());
         }
-
+        //todo 以上配置的参数赋值给ConfigUtils中的成员变量
         ConfigUtils.setProperties(properties);
     }
 

@@ -148,8 +148,10 @@ public class ConfigUtils {
         if (PROPERTIES == null) {
             synchronized (ConfigUtils.class) {
                 if (PROPERTIES == null) {
+                    //todo java程序运行时的配置项如java.version java.vm.version
                     String path = System.getProperty(CommonConstants.DUBBO_PROPERTIES_KEY);
                     if (path == null || path.length() == 0) {
+                        //todo 系统环境变量如Path JAVA_HOME TEMP
                         path = System.getenv(CommonConstants.DUBBO_PROPERTIES_KEY);
                         if (path == null || path.length() == 0) {
                             path = CommonConstants.DEFAULT_DUBBO_PROPERTIES;

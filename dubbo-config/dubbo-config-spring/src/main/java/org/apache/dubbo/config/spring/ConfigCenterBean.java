@@ -50,6 +50,7 @@ public class ConfigCenterBean extends ConfigCenterConfig implements ApplicationC
     }
 
     @Override
+
     public void destroy() throws Exception {
 
     }
@@ -63,7 +64,6 @@ public class ConfigCenterBean extends ConfigCenterConfig implements ApplicationC
             setAppExternalConfig(getConfigurations(StringUtils.isNotEmpty(getAppConfigFile()) ? getAppConfigFile() : ("application." + getConfigFile()), environment));
         }
     }
-
     private Map<String, String> getConfigurations(String key, Environment environment) {
         Object rawProperties = environment.getProperty(key, Object.class);
         Map<String, String> externalProperties = new HashMap<>();

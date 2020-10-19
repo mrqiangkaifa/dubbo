@@ -503,7 +503,9 @@ public class DubboBootstrap extends GenericEventListener {
         if (!initialized.compareAndSet(false, true)) {
             return;
         }
-
+        //todo ApplicationModel代表一个正在使用Dubbo框架的应用程序。它存储了RPC远程调用基础的元数据信息，
+        // 并且包含很多ProviderModel（包含了Provider发布的服务接口信息的模型）和ConsumerModel（包含了Consumer订阅的服务的信息的模型）
+        // FrameworkExt的实现类 ConfigManager ServiceRepository Environment，其中只有Environment有具体的initialize()方法实现，其他两个都是空实现
         ApplicationModel.initFrameworkExts();
 
         startConfigCenter();
